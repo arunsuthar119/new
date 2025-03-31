@@ -1,0 +1,166 @@
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Product Form</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="/stylesheets/styles.css">
+</head>
+<body>
+  
+  <nav class="navbar">
+    <div class="logo">C BABAR</div>
+    <div class="flex">
+        <div class="admin-info">
+            <img alt="User profile picture" class="profile-pic" src="https://storage.googleapis.com/a1aa/image/RxRUyAGSTQNxzJQs60XZ7iWmsstl_g1M965_NRv_sYI.jpg"/>
+            <div>
+                <p class="admin-name">Admin</p>
+            </div>
+        </div>
+        <button class="existing-products-btn" id="toggleButton" onclick="toggleView()">Existing Products</button>
+        <button class="logout-btn">Logout</button>
+    </div>
+</nav>
+<div class="main-content">
+    <div class="form-container" id="formContainer">
+        <div class="form-title">Product Form</div>
+        <form id="productForm" class="space-y-4" method="POST" enctype="multipart/form-data" action="/" onsubmit="addProduct(event)">
+            <div class="form-group">
+                <label class="form-label">Product Image</label>
+                <input class="form-input" type="file" name="productImg" id="productImg"/>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Product Name</label>
+                <input class="form-input" type="text" name="productname" id="productname"/>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Category</label>
+                <input class="form-input" type="text" name="category" id="category"/>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Subcategory</label>
+                <input class="form-input" type="text" name="subcategory" id="subcategory"/>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Description</label>
+                <input class="form-input" type="text" name="productdes" id="productdes"/>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Price</label>
+                <input class="form-input" type="text" name="price" id="price"/>
+            </div>
+            <button class="submit-btn" type="submit">Submit</button>
+        </form>
+    </div>
+    <div class="product-list" id="productList">
+        <table class="product-table" id="productTable">
+            <thead>
+                <tr>
+                    <th>Product Image</th>
+                    <th>Product Name</th>
+                    <th>Category</th>
+                    <th>Subcategory</th>
+                    <th>Price</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Product rows will be added here -->
+            </tbody>
+        </table>
+    </div>
+</div>
+<script>
+    const products = [];
+
+    function addProduct(event) {
+        event.preventDefault();
+        
+        // Get form values
+        const productImg = document.getElementById('productImg').files[0];
+        const productName = document.getElementById('productname').value;
+        const category = document.getElementById('category').value;
+        const subcategory = document.getElementById('subcategory').value;
+        const description = document.getElementById('productdes').value;
+        const price = document.getElementById('price').value;
+
+        // Create a new product object
+        const product = {
+            productImg,
+            productName,
+            category,
+            subcategory,
+            description,
+            price
+        };
+
+        // Add the product to the products array
+        products.push(product);
+
+        // Reset the form
+        document.getElementById('productForm').reset();
+    }
+
+    function displayProduct(product) {
+        const productTable = document.getElementById('productTable').getElementsByTagName('tbody')[0];
+        const newRow = productTable.insertRow();
+
+        // Create an image element if a file is selected
+        const imgCell = newRow.insertCell(0);
+        if (product.productImg) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                img.alt = product.productName;
+                img.style.width = '100px';
+                img.style.height = '100px';
+                img.style.objectFit = 'cover';
+                img.style.borderRadius = '8px';
+                imgCell.appendChild(img);
+            };
+            reader.readAsDataURL(product.productImg);
+        }
+
+        // Add product details
+        newRow.insertCell(1).innerText = product.productName;
+        newRow.insertCell(2).innerText = product.category;
+        newRow.insertCell(3).innerText = product.subcategory;
+        newRow.insertCell(4).innerText = `$${product.price}`;
+    }
+
+    function showExistingProducts() {
+        // Clear the product table
+        const productTable = document.getElementById('productTable').getElementsByTagName('tbody')[0];
+        productTable.innerHTML = '';
+
+        // Display all existing products
+        products.forEach(product => displayProduct(product));
+    }
+
+    function toggleView() {
+        const formContainer = document.getElementById('formContainer');
+        const productList = document.getElementById('productList');
+        const toggleButton = document.getElementById('toggleButton');
+
+        if (formContainer.style.display === 'none') {
+            formContainer.style.display = 'block';
+            productList.style.display = 'none';
+            toggleButton.textContent = 'Existing Products';
+            toggleButton.classList.remove('add-products-btn');
+            toggleButton.classList.add('existing-products-btn');
+        } else {
+            formContainer.style.display = 'none';
+            productList.style.display = 'block';
+            toggleButton.textContent = 'Add Products';
+            toggleButton.classList.remove('existing-products-btn');
+            toggleButton.classList.add('add-products-btn');
+            showExistingProducts();
+        }
+    }
+
+    // Initialize the view
+    document.getElementById('formContainer').style.display = 'block';
+    document.getElementById('productList').style.display = 'none';
+</script>
+</body>
+</html>
